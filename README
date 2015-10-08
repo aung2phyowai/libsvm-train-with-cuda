@@ -1,3 +1,32 @@
+svm-train with CUDA
+
+Base on libsvm-3.18. Two bottleneck functions are rewritten with CUDA support. Modify the original implement as less as possible, as you can see:
+                CUDA_k_function(model->SV, l, model->param, x, kvalue);
+/*
+                // Verify the result
+                float val;
+                if( (float)kvalue[i]!=(val=Kernel::k_function(x,model->SV[i],model->param)) )
+                        printf("CUDA_k_function result not match %d, %f != %f\n", i, kvalue[i], val);
+*/
+/*
+                // original implement
+#pragma omp parallel for private(i)
+                for(i=0;i<l;i++)
+                        kvalue[i] = Kernel::k_function(x,model->SV[i],model->param);
+*/
+Tested in Linux ONLY.
+svm-train ONLY, svm-predict is not supported yet.
+svm_type support C-SVC(default value of libsvm) ONLY.
+probability_estimates (-b 1) is SUPPORTED.
+kernel_type tested with "radial basis function"(default value of libsvm) ONLY. The other kernel_type SHOULD be OK, but not tested.
+-h 0 is a MUST.
+So you should run svm-train like this:
+svm-train -h 0 -s 0 -t 2 .....
+or
+svm-train -h 0 -s 0 -t 2 -b 1.....
+
+
+
 Libsvm is a simple, easy-to-use, and efficient software for SVM
 classification and regression. It solves C-SVM classification, nu-SVM
 classification, one-class-SVM, epsilon-SVM regression, and nu-SVM
@@ -767,4 +796,3 @@ Council of Taiwan via the grant NSC 89-2213-E-002-013.
 The authors thank their group members and users
 for many helpful discussions and comments. They are listed in
 http://www.csie.ntu.edu.tw/~cjlin/libsvm/acknowledgements
-
